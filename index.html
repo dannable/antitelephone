@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Tachyonic Antitelephone — why FTL breaks causality</title>
+<meta name="description" content="An interactive Minkowski diagram showing how two faster-than-light signals, each instantaneous in its sender's frame, deliver a reply before the original message was sent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B1220; --panel:#0F1A2E; --grid:#1C2A47; --grid-soft:#141F38;
+  --ink:#E8ECF4; --muted:#8FA1BF; --faint:#5A6B8C;
+  --earth:#5CA8FF; --ship:#3ADFB2; --hop1:#FFB454; --hop2:#FF7A59;
+  --pulse:#FFD166; --cone:#33415E;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{
+  font-family:'STIX Two Text',Georgia,serif; color:var(--ink);
+  line-height:1.65; font-size:17px;
+  max-width:960px; margin:0 auto; padding:48px 20px 80px;
+}
+h1{font-size:clamp(26px,4.5vw,38px); font-weight:600; line-height:1.2; letter-spacing:-0.01em}
+h1 .sub{display:block; font-size:0.5em; font-weight:400; color:var(--muted); font-style:italic; margin-top:6px}
+h2{font-size:20px; font-weight:600; margin:36px 0 10px}
+p{margin:12px 0; color:var(--ink)}
+p.muted{color:var(--muted)}
+.mono, .readout, .ticklabel{font-family:'IBM Plex Mono',monospace}
+code{font-family:'IBM Plex Mono',monospace; font-size:0.85em; background:var(--panel); padding:1px 6px; border-radius:4px; border:1px solid var(--grid)}
+.diagram-card{
+  background:var(--panel); border:1px solid var(--grid); border-radius:14px;
+  padding:18px 18px 14px; margin:28px 0 8px;
+}
+svg{display:block; width:100%; height:auto}
+.controls{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--muted);
+}
+button{
+  font-family:'IBM Plex Mono',monospace; font-size:13px;
+  background:var(--grid-soft); color:var(--ink);
+  border:1px solid var(--grid); border-radius:8px;
+  padding:8px 16px; cursor:pointer;
+}
+button:hover{border-color:var(--faint)}
+button:focus-visible, input:focus-visible{outline:2px solid var(--hop1); outline-offset:2px}
+input[type=range]{flex:1; min-width:160px; accent-color:var(--hop1)}
+.vlabel{min-width:200px}
+.readout{
+  margin-top:10px; font-size:14px; color:var(--hop2);
+  border-top:1px dashed var(--grid); padding-top:10px;
+}
+.legend{display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--muted)}
+.legend span::before{content:""; display:inline-block; width:18px; height:3px; border-radius:2px; margin-right:6px; vertical-align:middle; background:var(--c)}
+ul{margin:12px 0 12px 22px}
+li{margin:8px 0}
+footer{margin-top:56px; font-size:14px; color:var(--faint); border-top:1px solid var(--grid); padding-top:16px}
+a{color:var(--earth)}
+@media (max-width:600px){ body{font-size:16px; padding-top:28px} }
+</style>
+</head>
+<body>
+
+<h1>The Tachyonic Antitelephone
+<span class="sub">two "instant" messages, one reply from the future — a working Minkowski diagram</span></h1>
+
+<p>Earth sends a signal that travels instantaneously <em>in Earth's rest frame</em> to a ship
+8 light-years away, receding at 0.8c. The ship replies instantaneously
+<em>in its own rest frame</em> the only frame it has direct access to. The reply reaches
+Earth <strong>6.4 years before the original message was sent</strong>. No clock ever runs
+backward; the paradox lives in the geometry of simultaneity.</p>
+
+<div class="diagram-card">
+<svg viewBox="0 0 900 640" role="img" aria-label="Interactive Minkowski spacetime diagram of the tachyonic antitelephone">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <clipPath id="plot"><rect x="70" y="30" width="700" height="570"/></clipPath>
+</defs>
+
+<!-- sheared Earth-coordinate grid -->
+<g id="grid" clip-path="url(#plot)" stroke="var(--grid)" stroke-width="1"></g>
+
+<!-- axes of the current (viewing) frame -->
+<g id="axes" stroke="var(--faint)" stroke-width="1.2">
+  <line x1="70" y1="30" x2="70" y2="600"/>
+  <line x1="70" y1="170" x2="770" y2="170"/>
+</g>
+<g id="ticks" class="ticklabel" font-size="12" fill="var(--muted)"></g>
+<text class="ticklabel" x="58" y="26" font-size="13" fill="var(--muted)" text-anchor="end">t (yr)</text>
+<text class="ticklabel" x="775" y="620" font-size="13" fill="var(--muted)" text-anchor="end">x (light-years)</text>
+
+<g clip-path="url(#plot)">
+  <line id="lc1" stroke="var(--cone)" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <line id="lc2" stroke="var(--cone)" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <line id="wlE" stroke="var(--earth)" stroke-width="2.4"/>
+  <line id="wlS" stroke="var(--ship)" stroke-width="2.4"/>
+  <line id="h1" stroke="var(--hop1)" stroke-width="2.2" marker-end="url(#arr)"/>
+  <line id="h2" stroke="var(--hop2)" stroke-width="2.2" marker-end="url(#arr)"/>
+  <circle id="pulse" r="6" fill="var(--pulse)" opacity="0"/>
+</g>
+
+<circle id="pA" r="5.5" fill="var(--earth)"/>
+<circle id="pB" r="5.5" fill="var(--ship)"/>
+<circle id="pC" r="5.5" fill="var(--hop2)"/>
+<text id="tA" class="ticklabel" font-size="14" fill="var(--ink)" text-anchor="end">A · send</text>
+<text id="tB" class="ticklabel" font-size="14" fill="var(--ink)" text-anchor="start">B · receive</text>
+<text id="tC" class="ticklabel" font-size="14" fill="var(--hop2)" text-anchor="end">C · reply arrives</text>
+<text id="tE" class="ticklabel" font-size="13" fill="var(--earth)" text-anchor="middle">Earth</text>
+<text id="tS" class="ticklabel" font-size="13" fill="var(--ship)" text-anchor="middle">Ship 0.8c</text>
+<text id="tcone" class="ticklabel" font-size="12" fill="var(--faint)" text-anchor="start">light cone of A (invariant)</text>
+</svg>
+
+<div class="controls">
+  <button id="playBtn" type="button">▶ Send signal</button>
+  <label for="boost">Boost</label>
+  <input type="range" id="boost" min="0" max="0.8" step="0.004" value="0" aria-label="Boost velocity between Earth frame and ship frame">
+  <span class="vlabel" id="vlabel">v = 0.00c · γ = 1.00 (Earth frame)</span>
+</div>
+<div class="legend">
+  <span style="--c:var(--earth)">Earth worldline</span>
+  <span style="--c:var(--ship)">Ship worldline</span>
+  <span style="--c:var(--hop1)">Hop 1 · instant in Earth frame</span>
+  <span style="--c:var(--hop2)">Hop 2 · instant in ship frame</span>
+  <span style="--c:var(--cone)">Light cone</span>
+</div>
+<div class="readout" id="readout"></div>
+</div>
+
+<h2>How to read it</h2>
+<ul>
+<li>Time runs upward, space runs right, and units are chosen so light travels at 45°.
+The dashed lines are the light cone of event A. Drag the slider and notice they
+<em>never move</em>. The light cone is the invariant structure of spacetime.</li>
+<li>The faint grid is Earth's coordinate system. As you boost toward the ship's frame,
+it shears into parallelograms: lines of constant Earth-time tilt. That tilt is
+relativity of simultaneity, drawn directly.</li>
+<li>At v = 0 (Earth's frame): hop 1 is flat because "instant in Earth's frame" means
+"along a line of constant Earth-time." Hop 2 runs along the ship's simultaneity
+slice, which has slope v/c² = 0.8 in Earth's coordinates.</li>
+<li>At v = 0.8c (the ship's frame): the roles swap. Hop 2 is now flat, the ship's
+reply really is "instant" from its own honest point of view and hop 1 is the
+tilted one. Neither frame is wrong.</li>
+<li>In <em>every</em> frame, event C sits below event A on Earth's worldline. A and C both
+lie on that worldline, so their order is frame-independent: every observer in the
+universe agrees Earth received the answer before asking the question.</li>
+</ul>
+
+<h2>The calculation</h2>
+<p class="mono" style="font-size:14.5px; color:var(--muted)">
+γ = 1/√(1−0.8²) = 5/3<br>
+A = (t, x) = (0, 0) &nbsp;·&nbsp; B = (0, 8) &nbsp;→&nbsp; ship frame: t′ = γ(t − vx) = −10.67 yr<br>
+Ship replies at constant t′; Earth is at x′ = −0.8t′ = 8.53 ly at that moment<br>
+Transform back: t = γ(t′ + vx′) = <span style="color:var(--hop2)">−6.4 yr</span> &nbsp;·&nbsp; x = γ(x′ + vt′) = 0 ✓
+</p>
+
+<p>The mechanism generalizes: for any signal at speed u &gt; c in one frame, a subluminal
+partner frame moving at v &gt; c²/u exists in which the signal goes backward in time —
+and since u &gt; c implies c²/u &lt; c, such a frame always exists, no matter how mild
+the FTL. Two hops chained across a relative velocity close the loop. FTL, relativity,
+and causality: pick two.</p>
+
+<footer>
+Scenario: Earth ≈ at rest in the CMB frame; ship receding at 0.8c at distance 8 ly.
+Each FTL hop is instantaneous in its sender's rest frame. Built with plain SVG + vanilla JS.
+</footer>
+
+<script>
+(function(){
+const S=36, OX=70, OY=170;                       // px per (ly, yr); origin of current-frame axes
+const px=(t,x)=>[OX+S*x, OY-S*t];
+const boostPt=(t,x,v)=>{const g=1/Math.sqrt(1-v*v); return [g*(t-v*x), g*(x-v*t)];};
+const EV={A:[0,0], B:[0,8], C:[-6.4,0]};
+const WL={E1:[-12,0], E2:[3.2,0], S1:[-12,-1.6], S2:[3.2,10.56], L1:[3.8,3.8], L2:[-12,12]};
+let V=0, anim=null;
+
+const $=id=>document.getElementById(id);
+const setL=(id,p1,p2)=>{const e=$(id),a=px(...p1),b=px(...p2);
+  e.setAttribute('x1',a[0]);e.setAttribute('y1',a[1]);e.setAttribute('x2',b[0]);e.setAttribute('y2',b[1]);};
+const setLpx=(id,a,b)=>{const e=$(id);
+  e.setAttribute('x1',a[0]);e.setAttribute('y1',a[1]);e.setAttribute('x2',b[0]);e.setAttribute('y2',b[1]);};
+const setP=(id,p)=>{const e=$(id),a=px(...p);e.setAttribute('cx',a[0]);e.setAttribute('cy',a[1]);};
+const setT=(id,p,dx,dy)=>{const e=$(id),a=px(...p);e.setAttribute('x',a[0]+dx);e.setAttribute('y',a[1]+dy);};
+const shrink=(p1,p2,r1,r2)=>{const a=px(...p1),b=px(...p2),L=Math.hypot(b[0]-a[0],b[1]-a[1]),
+  ux=(b[0]-a[0])/L, uy=(b[1]-a[1])/L;
+  return [[a[0]+ux*r1,a[1]+uy*r1],[b[0]-ux*r2,b[1]-uy*r2]];};
+
+// build axis ticks of the viewing frame (static)
+(function ticks(){
+  const g=$('ticks'); let h='';
+  for(let x=0;x<=13;x+=2){const[a,b]=px(0,x);
+    h+=`<line x1="${a}" y1="${b-4}" x2="${a}" y2="${b+4}" stroke="var(--faint)"/>`;
+    h+=`<text x="${a}" y="${b+20}" text-anchor="middle">${x}</text>`;}
+  for(let t=2;t>=-11;t-=2){const[a,b]=px(t,0);
+    h+=`<line x1="${a-4}" y1="${b}" x2="${a+4}" y2="${b}" stroke="var(--faint)"/>`;
+    h+=`<text x="${a-10}" y="${b+4}" text-anchor="end">${t}</text>`;}
+  g.innerHTML=h;
+})();
+
+// Earth-frame coordinate grid, sheared under boost
+function drawGrid(v){
+  const g=$('grid'); let h='';
+  for(let x=0;x<=13;x+=2){
+    const a=px(...boostPt(-12,x,v)), b=px(...boostPt(3.2,x,v));
+    h+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;}
+  for(let t=-12;t<=2;t+=2){
+    const a=px(...boostPt(t,-1,v)), b=px(...boostPt(t,13.5,v));
+    h+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`;}
+  g.innerHTML=h;
+}
+
+function render(){
+  const v=V;
+  const A=boostPt(...EV.A,v), B=boostPt(...EV.B,v), C=boostPt(...EV.C,v);
+  drawGrid(v);
+  setL('wlE',boostPt(...WL.E1,v),boostPt(...WL.E2,v));
+  setL('wlS',boostPt(...WL.S1,v),boostPt(...WL.S2,v));
+  setL('lc1',A,boostPt(...WL.L1,v));
+  setL('lc2',A,boostPt(...WL.L2,v));
+  const h1=shrink(A,B,9,11), h2=shrink(B,C,9,11);
+  setLpx('h1',h1[0],h1[1]); setLpx('h2',h2[0],h2[1]);
+  setP('pA',A); setP('pB',B); setP('pC',C);
+  setT('tA',A,-12,-12); setT('tB',B,13,-12); setT('tC',C,-12,26);
+  setT('tE',boostPt(...WL.E2,v),0,-10); setT('tS',boostPt(...WL.S2,v),0,-10);
+  setT('tcone',boostPt(...WL.L2,v),8,-6);
+  $('readout').textContent =
+    `Reply arrives at t = ${C[0].toFixed(1)} yr in this frame — before the send at t = 0. `+
+    `C lies below A on Earth's worldline in every frame.`;
+}
+
+$('boost').addEventListener('input',e=>{
+  V=parseFloat(e.target.value);
+  const g=1/Math.sqrt(1-V*V);
+  $('vlabel').textContent =
+    V<0.005 ? 'v = 0.00c · γ = 1.00 (Earth frame)' :
+    V>0.796 ? 'v = 0.80c · γ = 1.67 (ship frame)' :
+    `v = ${V.toFixed(2)}c · γ = ${g.toFixed(2)}`;
+  render();
+});
+
+$('playBtn').addEventListener('click',()=>{
+  if(anim)cancelAnimationFrame(anim);
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pulse=$('pulse'), segs=[['A','B'],['B','C']], dur=reduce?350:1400;
+  let start=null;
+  function step(ts){
+    if(!start)start=ts;
+    let p=(ts-start)/(dur*2);
+    if(p>=1){pulse.setAttribute('opacity',0); flashC(); anim=null; return;}
+    const si=p<0.5?0:1, f=(p-si*0.5)*2;
+    const a=px(...boostPt(...EV[segs[si][0]],V)), b=px(...boostPt(...EV[segs[si][1]],V));
+    pulse.setAttribute('opacity',1);
+    pulse.setAttribute('cx',a[0]+(b[0]-a[0])*f);
+    pulse.setAttribute('cy',a[1]+(b[1]-a[1])*f);
+    anim=requestAnimationFrame(step);
+  }
+  anim=requestAnimationFrame(step);
+});
+
+function flashC(){
+  const c=$('pC'); let n=0;
+  const iv=setInterval(()=>{
+    c.setAttribute('r', c.getAttribute('r')==='5.5' ? '10' : '5.5');
+    if(++n>5){clearInterval(iv); c.setAttribute('r','5.5');}
+  },160);
+}
+
+render();
+})();
+</script>
+</body>
+</html>
